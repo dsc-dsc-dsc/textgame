@@ -1,11 +1,17 @@
 import sys
 import os
+import random
+import termsiz
+#import time
 start = 0
-size = [16, 10]
-x = size[1]/2
-y = size[0]/2
-#x=1
-#y=1
+moves = 500
+size = [termsiz.get_terminal_width(), termsiz.get_terminal_height() - 2]
+x = size[0]/2
+y = size[1]/2
+def getsize():
+    size = [termsiz.get_terminal_width(), termsiz.get_terminal_height() - 2]
+    return size
+score = 0
 def genbox(size = size):
     size[0]=size[0]-2
     size[1]=size[1]-2
@@ -14,25 +20,34 @@ def genbox(size = size):
     finbox = [line1]*size[1]
     finbox.append(line0)
     finbox.insert(0, line0)
-    
-#    print finbox
     return finbox
 line = genbox()
-def printline():
-    os.system('clear')
-#    print chr(27) + "[2J"
-#    sys.stderr.write("\x1b[2J\x1b[H")
+def printline(msg = ""):
     for current in line:
         print current
-    sys.stdout.flush()
-
-def lineman(xx, yy, new):
+    print msg
+    #sys.stdout.flush()
+error = ""
+def lineman(xx, yy, new, collide = False):
+    global score
+    global error
     curr = list(line[yy])
+    #if len(new) > 1:
+        #
+    if curr[xx] == "@":
+        error = "You can't do that!"
+        return 1
+    if curr[xx] == ".":
+        score+=1
     curr[xx] = new
     curr = "".join(curr)
     line[yy] = curr
-    printline()
-
+    if new == "@":
+        printline("Generating objects")
+        return
+    if collide == False:
+        error = ""
+    printline("Score: "+ str(score) +"  Moves Remaining: " + str(moves) + "  " + error)
 
 def getch():
     import sys, tty, termios
@@ -45,47 +60,60 @@ def getch():
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
     return ch
 
-#print getch()
-
 def control(inp):
     global x
     global y
     global size
     lineman(x,y, " ")
-#    inp = raw_input()
-#    inp = getch()
-    print inp
-    if inp not in ["w", "a", "s", "d", "zz", "q", ""]:
-        print "Invalid input"
-    elif inp == "q":
+    if inp not in ["w", "a", "s", "d", "  ", "q", ""]:
+        printline("Invalid input")
+    elif inp == "q" or inp == "":
         sys.exit(1)
         line = ['x','x']
         return 1
-    elif inp == "":
-        print "Press Q to quit."
     elif inp == "w":
         y-=1
         if y < 1:
-            y = size[1]
-        lineman(x,y, "w")
+            y = size[1] - 2
+        if lineman(x,y, "w") == 1:
+            y+=1
+            lineman(x,y, "w", True)
     elif inp == "d":
         x+=1
-        if x > size[0]:
+        if x > size[0] - 2:
             x = 1
-        lineman(x,y, "d")
+        if lineman(x,y, "d") == 1:
+            x-=1
+            lineman(x,y, "d", True)
     elif inp == "s":
         y+=1
-        if y > size[1]:
+        if y > size[1] - 2:
             y = 1
-        lineman(x,y, "s")
+        if lineman(x,y, "s") == 1:
+            y-=1
+            lineman(x,y, "s", True)
     elif inp == "a":
         x-=1
         if x < 1:
-            x = size[0]
-        lineman(x,y, "a")
-inp = "zz"
+            x = size[0] - 2
+        if lineman(x,y, "a") == 1:
+            x+=1
+            lineman(x,y, "a", True)
+inp = "  "
+def genthings(char, upper):
+    for i in range(random.randint(0, upper)):
+        lineman(random.randint(1,size[0]),random.randint(1,size[1]), char)
+genthings("@", 20)
+genthings(".", 20)
+score = 0
 control(inp)
-while inp != "q":
+while inp != "q" and moves > 0:
     inp = getch()
     control(inp)
+    size = getsize()
+    #print int(time.time())
+    moves-=1
+while inp != "q" or moves < 0:
+    line = genbox()
+    
 sys.exit()
