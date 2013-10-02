@@ -101,10 +101,10 @@ def control(inp):
             lineman(x,y, "a", True)
 inp = "  "
 def genthings(char, upper):
-    for i in range(random.randint(0, upper)):
+    for i in range(random.randint(upper/2, upper)):
         lineman(random.randint(1,size[0]),random.randint(1,size[1]), char)
-genthings("@", 20)
-genthings(".", 20)
+genthings("@", 100)
+genthings(".", 200)
 score = 0
 control(inp)
 while inp != "q" and moves > 0:
