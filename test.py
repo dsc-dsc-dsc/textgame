@@ -6,8 +6,8 @@ import time
 start = 0
 moves = 1000000000000000000
 size = [termsiz.get_terminal_width(), termsiz.get_terminal_height() - 2]
-x = size[0]/2
-y = size[1]/2
+x = size[0]//2
+y = size[1]//2
 def getsize():
     size = [termsiz.get_terminal_width(), termsiz.get_terminal_height() - 2]
     return size
@@ -24,16 +24,15 @@ def genbox(size = size):
 line = genbox()
 def printline(msg = ""):
     for current in line:
-        print current
-    print msg
+        print(current)
+    print(msg)
     #sys.stdout.flush()
 error = ""
 def lineman(xx, yy, new, collide = False):
     global score
     global error
     curr = list(line[yy])
-    #if len(new) > 1:
-        #
+    print(curr)
     if curr[xx] == "@":
         error = "You can't do that!"
         return 1
@@ -161,7 +160,7 @@ def AI(c=False):
         time.sleep(0.1)
 
 def genthings(char, upper):
-    for i in range(random.randint(upper/2, upper)):
+    for i in range(random.randint(upper//2, upper)):
         lineman(random.randint(1,size[0]),random.randint(1,size[1]), char)
 genthings("@", 100)
 genthings(".", 100)
@@ -178,5 +177,5 @@ while inp != "q" and moves > 0:
     moves-=1
 while inp != "q" or moves < 0:
     line = genbox()
-    
+
 sys.exit()
