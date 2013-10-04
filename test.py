@@ -32,7 +32,6 @@ def lineman(xx, yy, new, collide = False):
     global score
     global error
     curr = list(line[yy])
-    print(curr)
     if curr[xx] == "@":
         error = "You can't do that!"
         return 1
