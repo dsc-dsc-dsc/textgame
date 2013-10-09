@@ -3,6 +3,7 @@ import os
 import random
 import termsiz
 import time
+import math
 start = 0
 moves = 1000000000000000000
 size = [termsiz.get_terminal_width(), termsiz.get_terminal_height() - 2]
@@ -47,13 +48,21 @@ def lineman(xx, yy, new, collide = False):
         error = ""
     printline("Score: "+ str(score) +"  Moves Remaining: " + str(moves) + "  " + error)
 
-def lineinf():
+def lineinf(direction):
     #print list(line[y])
     #time.sleep(1)
-    if "." in list(line[y]):
-        return line[y].index(".")
-    else:
-        return False
+    ite = 1
+    if direction == "x":
+        if "." in list(line[y]):
+            return line[y].index(".")
+        else:
+            return False
+    if direction == "y":
+        for aa in line:
+            if "." in list(aa[x]):
+                return ite
+        ite+=1
+    return False
 
 def getch():
     import sys, tty, termios
@@ -118,56 +127,145 @@ def control(inp):
         else:
             return 0
 inp = "  "
-def AI(c=False):
-    global x, moves
-    a = control(random.choice(["a","s","d","w"]))
-    if a == 1:
+class AI:
+    def __init__(self, x, y):
+        self.xc = x
+        self.xy = y
+    
+    def AI(self, x, y):
+        global moves
         time.sleep(0.1)
-        control("s")
-    elif a == 2:
-        time.sleep(0.1)
-        control("a")
-    elif a == 3:
-        time.sleep(0.1)
-        control("w")
-    elif a == 4:
-        time.sleep(0.1)
-        control("d")
-    else:
         #for i in range(0,random.randint(1,30)):
         #if c == 0:
-        info = lineinf()
-        #print info
+        infox = lineinf("x")
+        infoy = lineinf("y")
+        #print infoy
         #time.sleep(1)
         #moves -=1
-        if info != False or c == True:
-            if info > x:
-                for z in range(0,info-x):
+        if infox != False:
+            if infox > x:
+                for z in range(0,infox-x):
                     time.sleep(0.1)
-                    control("d")
+                    self.checkforobj("d")
                     moves-=1
             #    c == True
-            elif info < x:
-                for z in range(0,x-info):
+            elif infox < x:
+                for z in range(0,x-infox):
                     time.sleep(0.1)
-                    control("a")
+                    self.checkforobj("a")
                     moves-=1
             #    c == True
+        if infoy != False:
+            if infoy > y:
+                for z in range(0,y):
+                    time.sleep(0.1)
+                    self.checkforobj("w")
+                    moves-=1
+            elif infoy < y:
+                for z in range(0,y):
+                    time.sleep(0.1)
+                    self.checkforobj("s")
+                    moves-=1
         else:
-            control(random.choice(["a","s","d","w"]))
-            moves -=1
+            time.sleep(0.1)
+            rch = random.choice(["a","d"])
+            for q in range(0,10):
+                self.checkforobj(rch)
+                moves -=1
+                time.sleep(0.1)
         time.sleep(0.1)
+    def checkforobj(self, direction, x = 0):
+        a = control(direction)
+        if x > 3:
+            if direction == "w":
+                time.sleep(0.1)
+                control("s")
+                time.sleep(0.1)
+                control("s")
+            if direction == "s":
+                time.sleep(0.1)
+                control("w")
+                time.sleep(0.1)
+                control("w")
+            if direction == "a":
+                time.sleep(0.1)
+                control("d")
+                time.sleep(0.1)
+                control("d")
+            if direction == "d":
+                time.sleep(0.1)
+                control("a")
+                time.sleep(0.1)
+                control("a")
+        if a == 1:
+            time.sleep(0.1)
+            leforr = random.choice(["a","d"])
+            control(leforr)
+            time.sleep(0.1)
+            x+=1
+            self.checkforobj("w", x)
+            time.sleep(0.1)
+            self.checkforobj("w")
+            time.sleep(0.1)
+            if leforr == "a":
+                self.checkforobj("d")
+            else:
+                self.checkforobj("a")
+        elif a == 2:
+            time.sleep(0.1)
+            upord = random.choice(["s","w"])
+            control(upord)
+            time.sleep(0.1)
+            x+=1
+            self.checkforobj("d", x)
+            time.sleep(0.1)
+            self.checkforobj("d")
+            time.sleep(0.1)
+            if upord == "s":
+                self.checkforobj("w")
+            else:
+                self.checkforobj("s")
+        elif a == 3:
+            time.sleep(0.1)
+            leforr = random.choice(["a","d"])
+            control(leforr)
+            time.sleep(0.1)
+            x+=1
+            self.checkforobj("s", x)
+            time.sleep(0.1)
+            self.checkforobj("s")
+            time.sleep(0.1)
+            if leforr == "a":
+                self.checkforobj("d")
+            else:
+                self.checkforobj("a")
+        elif a == 4:
+            time.sleep(0.1)
+            upord = random.choice(["s","w"])
+            control(upord)
+            time.sleep(0.1)
+            x+=1
+            self.checkforobj("a", x)
+            time.sleep(0.1)
+            self.checkforobj("a")
+            time.sleep(0.1)
+            if upord == "s":
+                self.checkforobj("w")
+            else:
+                self.checkforobj("s")
 
+Badg = AI(x,y)
 def genthings(char, upper):
     for i in range(random.randint(upper//2, upper)):
         lineman(random.randint(1,size[0]),random.randint(1,size[1]), char)
+        #time.sleep(0.1)
 genthings("@", 100)
 genthings(".", 100)
 score = 0
 control(inp)
 #AI()
 while inp != "q" and moves > 0:
-    AI()
+    Badg.AI(x,y)
     #inp = getch()
     time.sleep(0.1)
     #control(inp)
