@@ -4,8 +4,9 @@ import random
 import termsiz
 import time
 import math
+slpt = 0
 start = 0
-moves = 1000000000000000000
+moves = 1
 size = [termsiz.get_terminal_width(), termsiz.get_terminal_height() - 2]
 x = size[0]//2
 y = size[1]//2
@@ -23,10 +24,14 @@ def genbox(size = size):
     finbox.insert(0, line0)
     return finbox
 line = genbox()
+zq = score
 def printline(msg = ""):
-    for current in line:
-        print(current)
-    print(msg)
+    global zq
+    zq+=1
+    if zq%1000==0:
+        for current in line:
+            print(current)
+        print(msg)
     #sys.stdout.flush()
 error = ""
 def lineman(xx, yy, new, collide = False):
@@ -132,9 +137,9 @@ class AI:
         self.xc = x
         self.xy = y
     
-    def AI(self, x, y):
+    def AI(self, x, y, r = False):
         global moves
-        time.sleep(0.1)
+        time.sleep(slpt)
         #for i in range(0,random.randint(1,30)):
         #if c == 0:
         infox = lineinf("x")
@@ -145,110 +150,113 @@ class AI:
         if infox != False:
             if infox > x:
                 for z in range(0,infox-x):
-                    time.sleep(0.1)
+                    time.sleep(slpt)
                     self.checkforobj("d")
-                    moves-=1
+                    moves+=1
             #    c == True
             elif infox < x:
                 for z in range(0,x-infox):
-                    time.sleep(0.1)
+                    time.sleep(slpt)
                     self.checkforobj("a")
-                    moves-=1
+                    moves+=1
             #    c == True
         if infoy != False:
             if infoy > y:
                 for z in range(0,y):
-                    time.sleep(0.1)
+                    time.sleep(slpt)
                     self.checkforobj("w")
-                    moves-=1
+                    moves+=1
             elif infoy < y:
                 for z in range(0,y):
-                    time.sleep(0.1)
+                    time.sleep(slpt)
                     self.checkforobj("s")
-                    moves-=1
+                    moves+=1
+        if r == True:
+            return
         else:
-            time.sleep(0.1)
-            rch = random.choice(["a","d"])
-            for q in range(0,10):
+            time.sleep(slpt)
+            rch = random.choice(["a", "d", "s", "w"])
+            for q in range(0,20):
                 self.checkforobj(rch)
-                moves -=1
-                time.sleep(0.1)
-        time.sleep(0.1)
+                self.AI(x,y,True)
+                moves -=2
+                time.sleep(0.04)
+        time.sleep(slpt)
     def checkforobj(self, direction, x = 0):
         a = control(direction)
         if x > 3:
             if direction == "w":
-                time.sleep(0.1)
+                time.sleep(slpt)
                 control("s")
-                time.sleep(0.1)
+                time.sleep(slpt)
                 control("s")
             if direction == "s":
-                time.sleep(0.1)
+                time.sleep(slpt)
                 control("w")
-                time.sleep(0.1)
+                time.sleep(slpt)
                 control("w")
             if direction == "a":
-                time.sleep(0.1)
+                time.sleep(slpt)
                 control("d")
-                time.sleep(0.1)
+                time.sleep(slpt)
                 control("d")
             if direction == "d":
-                time.sleep(0.1)
+                time.sleep(slpt)
                 control("a")
-                time.sleep(0.1)
+                time.sleep(slpt)
                 control("a")
         if a == 1:
-            time.sleep(0.1)
+            time.sleep(slpt)
             leforr = random.choice(["a","d"])
             control(leforr)
-            time.sleep(0.1)
+            time.sleep(slpt)
             x+=1
             self.checkforobj("w", x)
-            time.sleep(0.1)
+            time.sleep(slpt)
             self.checkforobj("w")
-            time.sleep(0.1)
+            time.sleep(slpt)
             if leforr == "a":
                 self.checkforobj("d")
             else:
                 self.checkforobj("a")
         elif a == 2:
-            time.sleep(0.1)
+            time.sleep(slpt)
             upord = random.choice(["s","w"])
             control(upord)
-            time.sleep(0.1)
+            time.sleep(slpt)
             x+=1
             self.checkforobj("d", x)
-            time.sleep(0.1)
+            time.sleep(slpt)
             self.checkforobj("d")
-            time.sleep(0.1)
+            time.sleep(slpt)
             if upord == "s":
                 self.checkforobj("w")
             else:
                 self.checkforobj("s")
         elif a == 3:
-            time.sleep(0.1)
+            time.sleep(slpt)
             leforr = random.choice(["a","d"])
             control(leforr)
-            time.sleep(0.1)
+            time.sleep(slpt)
             x+=1
             self.checkforobj("s", x)
-            time.sleep(0.1)
+            time.sleep(slpt)
             self.checkforobj("s")
-            time.sleep(0.1)
+            time.sleep(slpt)
             if leforr == "a":
                 self.checkforobj("d")
             else:
                 self.checkforobj("a")
         elif a == 4:
-            time.sleep(0.1)
+            time.sleep(slpt)
             upord = random.choice(["s","w"])
             control(upord)
-            time.sleep(0.1)
+            time.sleep(slpt)
             x+=1
             self.checkforobj("a", x)
-            time.sleep(0.1)
+            time.sleep(slpt)
             self.checkforobj("a")
-            time.sleep(0.1)
+            time.sleep(slpt)
             if upord == "s":
                 self.checkforobj("w")
             else:
@@ -258,20 +266,32 @@ Badg = AI(x,y)
 def genthings(char, upper):
     for i in range(random.randint(upper//2, upper)):
         lineman(random.randint(1,size[0]),random.randint(1,size[1]), char)
-        #time.sleep(0.1)
+        #time.sleep(slpt)
 genthings("@", 100)
 genthings(".", 100)
 score = 0
 control(inp)
 #AI()
+'''for ch in line:
+    print ch
+    time.sleep(slpt)
+    for cha in ch:
+        print cha
+        time.sleep(slpt)
+        if cha == "@":
+            cha == "fdsdsfds" + cha
+            print cha
+    print "reached end of for"
+print line
+time.sleep(2)'''
 while inp != "q" and moves > 0:
     Badg.AI(x,y)
     #inp = getch()
-    time.sleep(0.1)
+    time.sleep(slpt)
     #control(inp)
     size = getsize()
     #print int(time.time())
-    moves-=1
+    moves+=1
 while inp != "q" or moves < 0:
     line = genbox()
 
