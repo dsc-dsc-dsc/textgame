@@ -28,13 +28,13 @@ zq = score
 def printline(msg = ""):
     global zq
     zq+=1
-    if zq%1000==0:
+    if zq%1==0:
         for current in line:
             print(current)
         print(msg)
     #sys.stdout.flush()
 error = ""
-def lineman(xx, yy, new, collide = False):
+def lineman(xx, yy, new, collide = False, Pr = True):
     global score
     global error
     curr = list(line[yy])
@@ -49,9 +49,12 @@ def lineman(xx, yy, new, collide = False):
     if new == "@":
         printline("Generating objects")
         return
+    if new == ".":
+        return
     if collide == False:
         error = ""
-    printline("Score: "+ str(score) +"  Moves Remaining: " + str(moves) + "  " + error)
+    if Pr == True:
+        printline("Score: "+ str(score) +"  Moves Remaining: " + str(moves) + "  " + error)
 
 def lineinf(direction):
     #print list(line[y])
@@ -263,12 +266,18 @@ class AI:
                 self.checkforobj("s")
 
 Badg = AI(x,y)
+def setall(char, num):
+    for i in range(1, size[0]):
+        for q in range(1, size[1]):
+            print i, q
+            lineman(i, q, char, False)
 def genthings(char, upper):
     for i in range(random.randint(upper//2, upper)):
         lineman(random.randint(1,size[0]),random.randint(1,size[1]), char)
         #time.sleep(slpt)
-genthings("@", 100)
-genthings(".", 100)
+#genthings("@", 1000)
+#genthings(".", 12000)
+setall(".",10000)
 score = 0
 control(inp)
 #AI()
